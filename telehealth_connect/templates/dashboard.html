@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - TeleHealth Connect{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Welcome, {{ current_user.first_name }}!</h1>
+            <p>Manage your appointments and health information</p>
+        </div>
+
+        <div class="dashboard-actions">
+            <a href="{{ url_for('main.doctors') }}" class="btn btn-primary">
+                <span class="btn-icon">🔍</span> Find a Doctor
+            </a>
+            <a href="{{ url_for('appointments.my_appointments') }}" class="btn btn-secondary">
+                <span class="btn-icon">📋</span> View All Appointments
+            </a>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Upcoming Appointments -->
+            <section class="dashboard-section">
+                <h2 class="section-title">Upcoming Appointments</h2>
+                {% if upcoming_appointments %}
+                    <div class="appointments-list">
+                        {% for appointment in upcoming_appointments %}
+                            <div class="appointment-card">
+                                <div class="appointment-header">
+                                    <h3>{{ appointment.doctor.full_name }}</h3>
+                                    <span class="badge badge-{{ appointment.status }}">{{ appointment.status }}</span>
+                                </div>
+                                <div class="appointment-details">
+                                    <p><strong>Specialization:</strong> {{ appointment.doctor.specialization }}</p>
+                                    <p><strong>Date & Time:</strong> {{ appointment.datetime_str }}</p>
+                                    <p><strong>Location:</strong> {{ appointment.doctor.health_center.name }}</p>
+                                    {% if appointment.reason %}
+                                        <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="appointment-actions">
+                                    <a href="{{ url_for('appointments.view', appointment_id=appointment.id) }}" class="btn btn-sm btn-outline">View Details</a>
+                                    <form method="POST" action="{{ url_for('appointments.cancel', appointment_id=appointment.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <p>No upcoming appointments scheduled.</p>
+                        <a href="{{ url_for('main.doctors') }}" class="btn btn-primary">Book an Appointment</a>
+                    </div>
+                {% endif %}
+            </section>
+
+            <!-- Recent Appointments -->
+            <section class="dashboard-section">
+                <h2 class="section-title">Recent Appointments</h2>
+                {% if past_appointments %}
+                    <div class="appointments-list compact">
+                        {% for appointment in past_appointments %}
+                            <div class="appointment-card-compact">
+                                <div>
+                                    <strong>{{ appointment.doctor.full_name }}</strong>
+                                    <span class="text-muted"> - {{ appointment.doctor.specialization }}</span>
+                                </div>
+                                <div class="text-muted">{{ appointment.datetime_str }}</div>
+                                <span class="badge badge-{{ appointment.status }}">{{ appointment.status }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No past appointments found.</p>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

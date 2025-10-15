@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Home - TeleHealth Connect{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Your Health, Our Priority</h1>
+            <p class="hero-subtitle">Connect with qualified doctors and book appointments with ease</p>
+            <div class="hero-actions">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Get Started</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-lg">Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose TeleHealth Connect?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3>Find Doctors</h3>
+                <p>Search and discover qualified doctors by specialization and location</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Easy Booking</h3>
+                <p>Schedule appointments with your preferred doctors in just a few clicks</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏥</div>
+                <h3>Nearby Centers</h3>
+                <p>Locate health centers near you with comprehensive facility information</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure & Private</h3>
+                <p>Your health information is protected with industry-standard security</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cta">
+    <div class="container">
+        <h2>Ready to Take Control of Your Health?</h2>
+        <p>Join thousands of patients who trust TeleHealth Connect</p>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Sign Up Now</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Médecin - TeleHealth Connect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('main.index') }}" class="logo">🏥 TeleHealth Connect</a>
+            <div class="nav-links">
+                <a href="{{ url_for('main.index') }}">Accueil</a>
+                <a href="{{ url_for('auth.login') }}">Espace Patient</a>
+                <a href="{{ url_for('doctor.login') }}" class="active">Espace Médecin</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h2>👨‍⚕️ Espace Médecin</h2>
+                <p>Connectez-vous pour gérer vos rendez-vous</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('doctor.login') }}" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email professionnel</label>
+                    <input type="email" id="email" name="email" required
+                           placeholder="votre.email@hopital.tg">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required
+                           placeholder="Votre mot de passe">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    Se connecter
+                </button>
+            </form>
+
+            <div class="form-footer">
+                <p>Vous êtes un patient ? <a href="{{ url_for('auth.login') }}">Connectez-vous ici</a></p>
+                <p class="help-text">
+                    💡 <strong>Mot de passe par défaut :</strong> <code>doctor123</code><br>
+                    (À changer lors de votre première connexion)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

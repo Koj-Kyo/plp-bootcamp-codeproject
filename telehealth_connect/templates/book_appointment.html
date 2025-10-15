@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment - TeleHealth Connect{% endblock %}
+
+{% block content %}
+<div class="page-book-appointment">
+    <div class="container">
+        <div class="booking-layout">
+            <!-- Doctor Information -->
+            <div class="doctor-summary">
+                <h2>Doctor Information</h2>
+                <div class="doctor-card">
+                    <div class="doctor-avatar">
+                        <span class="avatar-text">{{ doctor.first_name[0] }}{{ doctor.last_name[0] }}</span>
+                    </div>
+                    <div class="doctor-info">
+                        <h3>{{ doctor.full_name }}</h3>
+                        <p class="doctor-specialization">{{ doctor.specialization }}</p>
+                        <p>{{ doctor.qualification }}</p>
+                        <div class="doctor-details">
+                            <p><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
+                            <p><strong>Consultation Fee:</strong> ${{ "%.2f"|format(doctor.consultation_fee) }}</p>
+                            <p><strong>Location:</strong> {{ doctor.health_center.name }}</p>
+                            <p><strong>Address:</strong> {{ doctor.health_center.full_address }}</p>
+                            <p><strong>Phone:</strong> {{ doctor.health_center.phone }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <div class="booking-form-section">
+                <h2>Schedule Your Appointment</h2>
+                <form method="POST" action="{{ url_for('appointments.book', doctor_id=doctor.id) }}" class="booking-form" id="bookingForm">
+                    <div class="form-group">
+                        <label for="appointment_date">Appointment Date *</label>
+                        <input type="date" id="appointment_date" name="appointment_date" required class="form-control" min="{{ today }}">
+                        <small class="form-text">Select a date for your appointment</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointment_time">Appointment Time *</label>
+                        <select id="appointment_time" name="appointment_time" required class="form-control">
+                            <option value="">Select a time</option>
+                            <option value="09:00">09:00 AM</option>
+                            <option value="09:30">09:30 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="10:30">10:30 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="11:30">11:30 AM</option>
+                            <option value="14:00">02:00 PM</option>
+                            <option value="14:30">02:30 PM</option>
+                            <option value="15:00">03:00 PM</option>
+                            <option value="15:30">03:30 PM</option>
+                            <option value="16:00">04:00 PM</option>
+                            <option value="16:30">04:30 PM</option>
+                            <option value="17:00">05:00 PM</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reason">Reason for Visit</label>
+                        <textarea id="reason" name="reason" rows="4" class="form-control" placeholder="Please describe your symptoms or reason for consultation"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
+                        <a href="{{ url_for('main.doctors') }}" class="btn btn-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Set minimum date to today
+    document.getElementById('appointment_date').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

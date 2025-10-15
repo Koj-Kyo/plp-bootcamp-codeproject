@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment Details - TeleHealth Connect{% endblock %}
+
+{% block content %}
+<div class="page-appointment-view">
+    <div class="container">
+        <h1 class="page-title">Appointment Details</h1>
+
+        <div class="appointment-details-card">
+            <div class="detail-section">
+                <h2>Appointment Information</h2>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <strong>Status:</strong>
+                        <span class="badge badge-{{ appointment.status }}">{{ appointment.status }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Date:</strong>
+                        <span>{{ appointment.appointment_date.strftime('%B %d, %Y') }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Time:</strong>
+                        <span>{{ appointment.appointment_time.strftime('%I:%M %p') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h2>Doctor Information</h2>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <strong>Doctor:</strong>
+                        <span>{{ appointment.doctor.full_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Specialization:</strong>
+                        <span>{{ appointment.doctor.specialization }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Qualification:</strong>
+                        <span>{{ appointment.doctor.qualification }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Experience:</strong>
+                        <span>{{ appointment.doctor.experience_years }} years</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h2>Location Information</h2>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <strong>Health Center:</strong>
+                        <span>{{ appointment.doctor.health_center.name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Address:</strong>
+                        <span>{{ appointment.doctor.health_center.full_address }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Phone:</strong>
+                        <span>{{ appointment.doctor.health_center.phone }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if appointment.reason %}
+            <div class="detail-section">
+                <h2>Reason for Visit</h2>
+                <p>{{ appointment.reason }}</p>
+            </div>
+            {% endif %}
+
+            {% if appointment.notes %}
+            <div class="detail-section">
+                <h2>Notes</h2>
+                <p>{{ appointment.notes }}</p>
+            </div>
+            {% endif %}
+
+            <div class="detail-actions">
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                {% if appointment.status == 'scheduled' %}
+                    <form method="POST" action="{{ url_for('appointments.cancel', appointment_id=appointment.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                        <button type="submit" class="btn btn-danger">Cancel Appointment</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

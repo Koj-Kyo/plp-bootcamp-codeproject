@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Health Centers - TeleHealth Connect{% endblock %}
+
+{% block content %}
+<div class="page-health-centers">
+    <div class="container">
+        <h1 class="page-title">Health Centers</h1>
+
+        <!-- Search and Filter -->
+        <div class="search-section">
+            <form method="GET" action="{{ url_for('main.health_centers') }}" class="search-form">
+                <div class="search-row">
+                    <div class="form-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search by name or address" value="{{ current_search }}">
+                    </div>
+                    <div class="form-group">
+                        <select name="city" class="form-control">
+                            <option value="">All Cities</option>
+                            {% for city in cities %}
+                                <option value="{{ city }}" {% if city == current_city %}selected{% endif %}>{{ city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Health Centers List -->
+        <div class="centers-list">
+            {% if centers %}
+                {% for center in centers %}
+                    <div class="center-card">
+                        <div class="center-header">
+                            <h3>{{ center.name }}</h3>
+                            <span class="center-location">📍 {{ center.city }}, {{ center.state }}</span>
+                        </div>
+                        <div class="center-details">
+                            <p><strong>Address:</strong> {{ center.full_address }}</p>
+                            <p><strong>Phone:</strong> {{ center.phone }}</p>
+                            <p><strong>Doctors Available:</strong> {{ center.doctors.count() }}</p>
+                        </div>
+                        <div class="center-doctors">
+                            <h4>Available Doctors:</h4>
+                            {% if center.doctors.all() %}
+                                <ul class="doctors-list-compact">
+                                    {% for doctor in center.doctors.filter_by(available=True).limit(5) %}
+                                        <li>
+                                            <strong>{{ doctor.full_name }}</strong> - {{ doctor.specialization }}
+                                            <a href="{{ url_for('appointments.book', doctor_id=doctor.id) }}" class="link-primary">Book</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No doctors currently available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <h3>No health centers found</h3>
+                    <p>Try adjusting your search criteria</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

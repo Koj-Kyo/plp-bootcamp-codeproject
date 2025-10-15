@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}My Appointments - TeleHealth Connect{% endblock %}
+
+{% block content %}
+<div class="page-appointments">
+    <div class="container">
+        <h1 class="page-title">My Appointments</h1>
+
+        {% if appointments %}
+            <div class="appointments-list">
+                {% for appointment in appointments %}
+                    <div class="appointment-card">
+                        <div class="appointment-header">
+                            <div>
+                                <h3>{{ appointment.doctor.full_name }}</h3>
+                                <p class="text-muted">{{ appointment.doctor.specialization }}</p>
+                            </div>
+                            <span class="badge badge-{{ appointment.status }}">{{ appointment.status }}</span>
+                        </div>
+                        <div class="appointment-details">
+                            <p><strong>Date & Time:</strong> {{ appointment.datetime_str }}</p>
+                            <p><strong>Location:</strong> {{ appointment.doctor.health_center.name }}, {{ appointment.doctor.health_center.city }}</p>
+                            <p><strong>Address:</strong> {{ appointment.doctor.health_center.full_address }}</p>
+                            <p><strong>Phone:</strong> {{ appointment.doctor.health_center.phone }}</p>
+                            {% if appointment.reason %}
+                                <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="appointment-actions">
+                            <a href="{{ url_for('appointments.view', appointment_id=appointment.id) }}" class="btn btn-sm btn-outline">View Details</a>
+                            {% if appointment.status == 'scheduled' %}
+                                <form method="POST" action="{{ url_for('appointments.cancel', appointment_id=appointment.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Cancel Appointment</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>No appointments found</h3>
+                <p>You haven't booked any appointments yet.</p>
+                <a href="{{ url_for('main.doctors') }}" class="btn btn-primary">Find a Doctor</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Find Doctors - TeleHealth Connect{% endblock %}
+
+{% block content %}
+<div class="page-doctors">
+    <div class="container">
+        <h1 class="page-title">Find a Doctor</h1>
+
+        <!-- Search and Filter -->
+        <div class="search-section">
+            <form method="GET" action="{{ url_for('main.doctors') }}" class="search-form">
+                <div class="search-row">
+                    <div class="form-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search by name or specialization" value="{{ current_search }}">
+                    </div>
+                    <div class="form-group">
+                        <select name="specialization" class="form-control">
+                            <option value="">All Specializations</option>
+                            {% for spec in specializations %}
+                                <option value="{{ spec }}" {% if spec == current_specialization %}selected{% endif %}>{{ spec }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select name="city" class="form-control">
+                            <option value="">All Cities</option>
+                            {% for city in cities %}
+                                <option value="{{ city }}" {% if city == current_city %}selected{% endif %}>{{ city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Doctors List -->
+        <div class="doctors-grid">
+            {% if doctors %}
+                {% for doctor in doctors %}
+                    <div class="doctor-card">
+                        <div class="doctor-avatar">
+                            <span class="avatar-text">{{ doctor.first_name[0] }}{{ doctor.last_name[0] }}</span>
+                        </div>
+                        <div class="doctor-info">
+                            <h3 class="doctor-name">{{ doctor.full_name }}</h3>
+                            <p class="doctor-specialization">{{ doctor.specialization }}</p>
+                            <p class="doctor-qualification">{{ doctor.qualification }}</p>
+                            <div class="doctor-details">
+                                <p><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
+                                <p><strong>Consultation Fee:</strong> ${{ "%.2f"|format(doctor.consultation_fee) }}</p>
+                                <p><strong>Location:</strong> {{ doctor.health_center.name }}, {{ doctor.health_center.city }}</p>
+                            </div>
+                            <div class="doctor-actions">
+                                <a href="{{ url_for('appointments.book', doctor_id=doctor.id) }}" class="btn btn-primary btn-block">Book Appointment</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <h3>No doctors found</h3>
+                    <p>Try adjusting your search criteria</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

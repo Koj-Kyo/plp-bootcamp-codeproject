@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossier Patient - TeleHealth Connect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .patient-info {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .patient-info h1 {
+            margin: 0 0 10px 0;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .info-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .info-item label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .info-item strong {
+            font-size: 1.1em;
+        }
+        .history-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 30px;
+            border-left: 2px solid #e5e7eb;
+        }
+        .timeline-item:last-child {
+            border-left: none;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+        .timeline-content {
+            margin-left: 20px;
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('doctor.dashboard') }}" class="logo">🏥 TeleHealth Connect</a>
+            <div class="nav-links">
+                <a href="{{ url_for('doctor.dashboard') }}">Tableau de bord</a>
+                <a href="{{ url_for('doctor.appointments') }}">Mes rendez-vous</a>
+                <a href="{{ url_for('doctor.logout') }}" class="btn-logout">Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 30px;">
+        <div class="page-header">
+            <h1>📁 Dossier Patient</h1>
+            <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-secondary">← Retour</a>
+        </div>
+
+        <!-- Patient Information -->
+        <div class="patient-info">
+            <h1>👤 {{ patient.full_name }}</h1>
+            <p style="opacity: 0.9; margin: 0;">Patient ID: #{{ patient.id }}</p>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Date de naissance</label>
+                    <strong>{{ patient.date_of_birth.strftime('%d/%m/%Y') }}</strong>
+                </div>
+                <div class="info-item">
+                    <label>Genre</label>
+                    <strong>{{ 'Homme' if patient.gender == 'male' else 'Femme' if patient.gender == 'female' else 'Autre' }}</strong>
+                </div>
+                <div class="info-item">
+                    <label>Email</label>
+                    <strong>{{ patient.email }}</strong>
+                </div>
+                <div class="info-item">
+                    <label>Téléphone</label>
+                    <strong>{{ patient.phone }}</strong>
+                </div>
+            </div>
+
+            {% if patient.address %}
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                <label style="opacity: 0.9;">Adresse</label>
+                <p style="margin: 5px 0 0 0;">{{ patient.address }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Appointment History -->
+        <div class="history-card">
+            <h2>📅 Historique des Rendez-vous avec Vous</h2>
+
+            {% if appointments_history %}
+            <div class="timeline">
+                {% for appointment in appointments_history %}
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                            <div>
+                                <strong>{{ appointment.appointment_date.strftime('%d/%m/%Y') }} à {{ appointment.appointment_time.strftime('%H:%M') }}</strong>
+                            </div>
+                            <span class="status-badge status-{{ appointment.status }}">
+                                {{ appointment.status|upper }}
+                            </span>
+                        </div>
+
+                        <p style="margin: 10px 0;">
+                            <strong>Raison:</strong> {{ appointment.reason or 'Consultation générale' }}
+                        </p>
+
+                        {% if appointment.notes %}
+                        <div style="background: white; padding: 12px; border-radius: 5px; margin-top: 10px; border-left: 3px solid var(--primary-color);">
+                            <strong>Notes:</strong>
+                            <p style="margin: 5px 0 0 0;">{{ appointment.notes }}</p>
+                        </div>
+                        {% endif %}
+
+                        <div style="margin-top: 10px;">
+                            <a href="{{ url_for('doctor.appointment_detail', appointment_id=appointment.id) }}"
+                               class="btn btn-sm btn-primary">
+                                Voir détails
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; color: #6b7280;">
+                <p>Total: <strong>{{ appointments_history|length }}</strong> rendez-vous avec ce patient</p>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 40px; color: #6b7280;">
+                <p>Aucun historique de rendez-vous avec ce patient.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
